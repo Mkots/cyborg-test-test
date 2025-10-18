@@ -1,4 +1,5 @@
 name: Playwright Tests
+run-name: Playwright Tests - ${{ github.event.inputs.project }}
 on:
   workflow_dispatch:
     inputs:
