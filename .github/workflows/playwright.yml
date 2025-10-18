@@ -22,10 +22,116 @@ jobs:
       run: npm ci
     
     - name: Run Playwright tests
-      run: npx playwright test
+      run: |
+          set +e
+          OUTPUT=$(npx playwright test 2>&1)
+          EXIT_CODE=$?
+          set -e
+          
+          echo "test_output<<EOF" >> $GITHUB_OUTPUT
+          echo "$OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          PASSED=$(echo "$OUTPUT" | grep -oP 'Notice: \K\d+(?= passed)' || echo "0")
+          FAILED=$(echo "$OUTPUT" | grep -oP '\K\d+(?= failed)' || echo "0")
+          SKIPPED=$(echo "$OUTPUT" | grep -oP '\K\d+(?= skipped)' || echo "0")
+          REPORT_URL=$(echo "$OUTPUT" | grep -oP 'HTML Report is available at: \K.*' || echo "")
+          
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+          echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
+          echo "report_url=$REPORT_URL" >> $GITHUB_OUTPUT
+          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+          
+          exit $EXIT_CODE
       env:
         CI: true
         CI_COMMIT_BRANCH: ${{ github.ref_name }}
         CT_TOKEN: ${{ secrets.CT_TOKEN }}
         CT_SERVER_URL: ${{ vars.CT_SERVER_URL }}
         HOME: /root
+        
+    - name: Run Playwright tests
+      id: playwright
+      run: |
+        set +e
+        OUTPUT=$(npx playwright test 2>&1)
+        EXIT_CODE=$?
+        set -e
+        
+        echo "test_output<<EOF" >> $GITHUB_OUTPUT
+        echo "$OUTPUT" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+        PASSED=$(echo "$OUTPUT" | grep -oP 'Notice: \K\d+(?= passed)' || echo "0")
+        FAILED=$(echo "$OUTPUT" | grep -oP '\K\d+(?= failed)' || echo "0")
+        SKIPPED=$(echo "$OUTPUT" | grep -oP '\K\d+(?= skipped)' || echo "0")
+        REPORT_URL=$(echo "$OUTPUT" | grep -oP 'HTML Report is available at: \K.*' || echo "")
+        
+        echo "passed=$PASSED" >> $GITHUB_OUTPUT
+        echo "failed=$FAILED" >> $GITHUB_OUTPUT
+        echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
+        echo "report_url=$REPORT_URL" >> $GITHUB_OUTPUT
+        echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+        
+        exit $EXIT_CODE
+    
+    - name: Generate Summary
+      if: always()
+      run: |
+        PASSED="${{ steps.playwright.outputs.passed }}"
+        FAILED="${{ steps.playwright.outputs.failed }}"
+        SKIPPED="${{ steps.playwright.outputs.skipped }}"
+        REPORT_URL="${{ steps.playwright.outputs.report_url }}"
+        EXIT_CODE="${{ steps.playwright.outputs.exit_code }}"
+        
+        if [ "$EXIT_CODE" -eq 0 ]; then
+          STATUS="✅ Success"
+          STATUS_COLOR="🟢"
+        else
+          STATUS="❌ Failed"
+          STATUS_COLOR="🔴"
+        fi
+        
+        TOTAL=$((PASSED + FAILED + SKIPPED))
+        
+        cat >> $GITHUB_STEP_SUMMARY << EOF
+        # 🎭 Playwright Test Results
+        
+        ## $STATUS_COLOR Status: $STATUS
+        
+        ### 📊 Test Statistics
+        
+        | Metric | Count | Percentage |
+        |--------|-------|------------|
+        | ✅ Passed | $PASSED | $(awk "BEGIN {printf \"%.1f\", ($PASSED/$TOTAL)*100}")% |
+        | ❌ Failed | $FAILED | $(awk "BEGIN {printf \"%.1f\", ($FAILED/$TOTAL)*100}")% |
+        | ⏭️ Skipped | $SKIPPED | $(awk "BEGIN {printf \"%.1f\", ($SKIPPED/$TOTAL)*100}")% |
+        | **📝 Total** | **$TOTAL** | **100%** |
+        
+        EOF
+        
+        if [ -n "$REPORT_URL" ]; then
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+        ### 📄 Reports
+        
+        🔗 [View HTML Report]($REPORT_URL)
+        
+        EOF
+        fi
+        
+        cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+        <details>
+        <summary>📋 Full Test Output</summary>
+        
+        ```
+        EOF
+        
+        echo "${{ steps.playwright.outputs.test_output }}" >> $GITHUB_STEP_SUMMARY
+        
+        cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+        ```
+        
+        </details>
+        EOF
+

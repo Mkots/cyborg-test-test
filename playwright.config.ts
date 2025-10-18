@@ -36,6 +36,7 @@ export default defineConfig({
       '@cyborgtests/reporter-playwright-reports-server',
       {
         enabled: true,
+        project: "Cyborg Test Playwright Tests",
         url: env.CT_SERVER_URL,
         token: env.CT_TOKEN,
         requestTimeout: 60000,
