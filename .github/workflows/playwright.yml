@@ -22,6 +22,7 @@ jobs:
       run: npm ci
     
     - name: Run Playwright tests
+      id: playwright
       run: |
           set +e
           OUTPUT=$(npx playwright test 2>&1)
@@ -50,32 +51,7 @@ jobs:
         CT_TOKEN: ${{ secrets.CT_TOKEN }}
         CT_SERVER_URL: ${{ vars.CT_SERVER_URL }}
         HOME: /root
-        
-    - name: Run Playwright tests
-      id: playwright
-      run: |
-        set +e
-        OUTPUT=$(npx playwright test 2>&1)
-        EXIT_CODE=$?
-        set -e
-        
-        echo "test_output<<EOF" >> $GITHUB_OUTPUT
-        echo "$OUTPUT" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
-        
-        PASSED=$(echo "$OUTPUT" | grep -oP 'Notice: \K\d+(?= passed)' || echo "0")
-        FAILED=$(echo "$OUTPUT" | grep -oP '\K\d+(?= failed)' || echo "0")
-        SKIPPED=$(echo "$OUTPUT" | grep -oP '\K\d+(?= skipped)' || echo "0")
-        REPORT_URL=$(echo "$OUTPUT" | grep -oP 'HTML Report is available at: \K.*' || echo "")
-        
-        echo "passed=$PASSED" >> $GITHUB_OUTPUT
-        echo "failed=$FAILED" >> $GITHUB_OUTPUT
-        echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
-        echo "report_url=$REPORT_URL" >> $GITHUB_OUTPUT
-        echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
-        
-        exit $EXIT_CODE
-    
+
     - name: Generate Summary
       if: always()
       run: |
@@ -127,7 +103,7 @@ jobs:
         ```
         EOF
         
-        echo "${{ steps.playwright.outputs.test_output }}" >> $GITHUB_STEP_SUMMARY
+        echo -e "${{ steps.playwright.outputs.test_output }}" >> $GITHUB_STEP_SUMMARY
         
         cat >> $GITHUB_STEP_SUMMARY << 'EOF'
         ```
