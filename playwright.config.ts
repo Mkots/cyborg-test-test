@@ -31,12 +31,12 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
     reporter: [
     ['blob', { outputFile: 'test-results/blob.zip' }],
-    ['github'],
+    ['dot'],
     [
       '@cyborgtests/reporter-playwright-reports-server',
       {
         enabled: true,
-        project: "Cyborg Test Playwright Tests",
+        
         url: env.CT_SERVER_URL,
         token: env.CT_TOKEN,
         requestTimeout: 60000,
@@ -44,7 +44,7 @@ export default defineConfig({
         reportPath: 'test-results/blob.zip',
         resultDetails: {
           branch: env.CI_COMMIT_BRANCH,
-          foo: 'bar',
+          project: "Cyborg Test Playwright Tests",
           bar: 'baz'
         },
         triggerReportGeneration: true
