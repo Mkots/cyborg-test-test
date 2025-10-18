@@ -1,6 +1,16 @@
 name: Playwright Tests
 on:
   workflow_dispatch:
+    inputs:
+      project:
+        type: choice
+        description: 'Specify the project to test (optional)'
+        options:
+          - 'project-one'
+          - 'project-two'
+          - 'project-three'
+        required: true
+        default: 'project-one'
 
 jobs:
   test:
@@ -25,7 +35,7 @@ jobs:
       id: playwright
       run: |
           set +e
-          OUTPUT=$(npx playwright test 2>&1)
+          OUTPUT=$(npx playwright test --project=${{ github.event.inputs.project }} 2>&1)
           EXIT_CODE=$?
           set -e
           
@@ -68,6 +78,8 @@ jobs:
         CI_COMMIT_BRANCH: ${{ github.ref_name }}
         CT_TOKEN: ${{ secrets.CT_TOKEN }}
         CT_SERVER_URL: ${{ vars.CT_SERVER_URL }}
+        QA_USERNAME: ${{ github.actor }}
+        PROJECT: ${{ github.event.inputs.project }}
         HOME: /root
       
     - name: Generate Summary

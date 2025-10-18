@@ -44,7 +44,7 @@ export default defineConfig({
         reportPath: 'test-results/blob.zip',
         resultDetails: {
           branch: env.CI_COMMIT_BRANCH,
-          project: "Cyborg Test Playwright Tests",
+          project: process.env.PROJECT,
           bar: 'baz'
         },
         triggerReportGeneration: true
@@ -57,17 +57,17 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'chromium',
+      name: 'project-one',
       use: { ...devices['Desktop Chrome'] },
     },
 
     {
-      name: 'firefox',
+      name: 'project-two',
       use: { ...devices['Desktop Firefox'] },
     },
 
     {
-      name: 'webkit',
+      name: 'project-three',
       use: { ...devices['Desktop Safari'] },
     },
 
