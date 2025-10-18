@@ -27,5 +27,5 @@ jobs:
         CI: true
         CI_COMMIT_BRANCH: ${{ github.ref_name }}
         CT_TOKEN: ${{ secrets.CT_TOKEN }}
-        CT_SERVER_URL: ${{ secrets.CT_SERVER_URL }}
+        CT_SERVER_URL: ${{ vars.CT_SERVER_URL }}
         HOME: /root
