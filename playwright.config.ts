@@ -78,6 +78,7 @@ export default defineConfig({
       testMatch: /.*\/api\/.*\.ts/,
       use: {
         baseURL: 'https://jsonplaceholder.typicode.com',
+        trace: 'on',
       },
     }
 
