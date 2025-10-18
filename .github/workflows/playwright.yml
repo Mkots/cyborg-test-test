@@ -33,11 +33,6 @@ jobs:
           echo "$OUTPUT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
           
-          PASSED=$(echo "$OUTPUT" | grep -oP '\d+(?= passed)' | head -1 || echo "0")
-          FAILED=$(echo "$OUTPUT" | grep -oP '\d+(?= failed)' | head -1 || echo "0")
-          SKIPPED=$(echo "$OUTPUT" | grep -oP '\d+(?= skipped)' | head -1 || echo "0")
-          FLAKY=$(echo "$OUTPUT" | grep -oP '\d+(?= flaky)' | head -1 || echo "0")
-          
           DOTS_LINE=$(echo "$OUTPUT" | grep -oP '^[·F×±T°]+' | head -1 || echo "")
           
           if [ -n "$DOTS_LINE" ]; then
@@ -58,10 +53,6 @@ jobs:
           
           REPORT_URL=$(echo "$OUTPUT" | grep -oP 'HTML Report is available at: \K.*' || echo "")
           
-          echo "passed=$PASSED" >> $GITHUB_OUTPUT
-          echo "failed=$FAILED" >> $GITHUB_OUTPUT
-          echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
-          echo "flaky=$FLAKY" >> $GITHUB_OUTPUT
           echo "dot_passed=$DOT_PASSED" >> $GITHUB_OUTPUT
           echo "dot_failed=$DOT_FAILED" >> $GITHUB_OUTPUT
           echo "dot_retry=$DOT_RETRY" >> $GITHUB_OUTPUT
@@ -82,12 +73,12 @@ jobs:
     - name: Generate Summary
       if: always()
       run: |
-        PASSED="${{ steps.playwright.outputs.passed }}"
-        FAILED="${{ steps.playwright.outputs.failed }}"
-        SKIPPED="${{ steps.playwright.outputs.skipped }}"
-        FLAKY="${{ steps.playwright.outputs.flaky }}"
-        DOT_RETRY="${{ steps.playwright.outputs.dot_retry }}"
-        DOT_TIMEOUT="${{ steps.playwright.outputs.dot_timeout }}"
+        PASSED="${{ steps.playwright.outputs.dot_passed }}"
+        FAILED="${{ steps.playwright.outputs.dot_failed }}"
+        SKIPPED="${{ steps.playwright.outputs.dot_skipped }}"
+        FLAKY="${{ steps.playwright.outputs.dot_flaky }}"
+        RETRY="${{ steps.playwright.outputs.dot_retry }}"
+        TIMEOUT="${{ steps.playwright.outputs.dot_timeout }}"
         REPORT_URL="${{ steps.playwright.outputs.report_url }}"
         EXIT_CODE="${{ steps.playwright.outputs.exit_code }}"
          
@@ -98,9 +89,9 @@ jobs:
           STATUS="❌ Failed"
           STATUS_COLOR="🔴"
         fi
-        
+
         TOTAL=$((PASSED + FAILED + SKIPPED))
-        
+
         cat >> $GITHUB_STEP_SUMMARY << EOF
         # 🎭 Playwright Test Results
         
@@ -110,15 +101,15 @@ jobs:
         
         | Metric | Count | Percentage |
         |--------|-------|------------|
-        | · Passed | $PASSED | $(awk "BEGIN {printf \"%.1f\", ($PASSED/$TOTAL)*100}")% |
-        | F Failed | $FAILED | $(awk "BEGIN {printf \"%.1f\", ($FAILED/$TOTAL)*100}")% |
-        | ° Skipped | $SKIPPED | $(awk "BEGIN {printf \"%.1f\", ($SKIPPED/$TOTAL)*100}")% |
+        | Passed | $PASSED | $(awk "BEGIN {printf \"%.1f\", ($PASSED/$TOTAL)*100}")% |
+        | Failed | $FAILED | $(awk "BEGIN {printf \"%.1f\", ($FAILED/$TOTAL)*100}")% |
+        | Skipped | $SKIPPED | $(awk "BEGIN {printf \"%.1f\", ($SKIPPED/$TOTAL)*100}")% |
         | **📝 Total** | **$TOTAL** | **100%** |
         
         EOF
         
         #     
-        if [ "$FLAKY" -gt 0 ] || [ "$DOT_RETRY" -gt 0 ] || [ "$DOT_TIMEOUT" -gt 0 ]; then
+        if [ "$FLAKY" -gt 0 ] || [ "$RETRY" -gt 0 ] || [ "$TIMEOUT" -gt 0 ]; then
           cat >> $GITHUB_STEP_SUMMARY << EOF
         ### ⚠️ Additional Details
         
@@ -127,15 +118,15 @@ jobs:
         EOF
           
           if [ "$FLAKY" -gt 0 ]; then
-            echo "| ± Flaky | $FLAKY | Passed on retry |" >> $GITHUB_STEP_SUMMARY
+            echo "| Flaky | $FLAKY | Passed on retry |" >> $GITHUB_STEP_SUMMARY
           fi
           
-          if [ "$DOT_RETRY" -gt 0 ]; then
-            echo "| × Retry | $DOT_RETRY | Failed and will be retried |" >> $GITHUB_STEP_SUMMARY
+          if [ "$RETRY" -gt 0 ]; then
+            echo "| Retry | $RETRY | Failed and will be retried |" >> $GITHUB_STEP_SUMMARY
           fi
           
-          if [ "$DOT_TIMEOUT" -gt 0 ]; then
-            echo "| T Timeout | $DOT_TIMEOUT | Timed out |" >> $GITHUB_STEP_SUMMARY
+          if [ "$TIMEOUT" -gt 0 ]; then
+            echo "| Timeout | $TIMEOUT | Timed out |" >> $GITHUB_STEP_SUMMARY
           fi
           
           echo "" >> $GITHUB_STEP_SUMMARY
