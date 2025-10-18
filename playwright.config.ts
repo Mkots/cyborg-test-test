@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import { cleanEnv, str, url } from 'envalid';
 
-dotenv.config();
+dotenv.config({quiet: true});
 
 const env = cleanEnv(process.env, {
   CT_SERVER_URL: url(),
