@@ -58,18 +58,28 @@ export default defineConfig({
   projects: [
     {
       name: 'project-one',
+      testMatch: /.*\/e2e\/.*\.ts/,
       use: { ...devices['Desktop Chrome'] },
     },
 
     {
       name: 'project-two',
+      testMatch: /.*\/e2e\/.*\.ts/,
       use: { ...devices['Desktop Firefox'] },
     },
 
     {
       name: 'project-three',
+      testMatch: /.*\/e2e\/.*\.ts/,
       use: { ...devices['Desktop Safari'] },
     },
+    {
+      name: 'api-tests',
+      testMatch: /.*\/api\/.*\.ts/,
+      use: {
+        baseURL: 'https://jsonplaceholder.typicode.com',
+      },
+    }
 
   ],
 

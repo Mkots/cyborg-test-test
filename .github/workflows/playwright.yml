@@ -9,6 +9,7 @@ on:
           - 'project-one'
           - 'project-two'
           - 'project-three'
+          - 'api-tests'
         required: true
         default: 'project-one'
 
