@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -11,7 +13,9 @@
     "@cyborgtests/reporter-playwright-reports-server": "^2.4.1",
     "@playwright/test": "^1.56.1",
     "@types/node": "^24.8.1",
+    "@types/sinon": "^17.0.4",
     "dotenv": "^17.2.3",
-    "envalid": "^8.1.0"
+    "envalid": "^8.1.0",
+    "sinon": "^21.0.0"
   }
 }
