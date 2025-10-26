@@ -31,7 +31,6 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
     reporter: [
     ['blob', { outputFile: 'test-results/blob.zip' }],
-    ['./coverage-reporter.ts'],
     ['dot'],
     [
       '@cyborgtests/reporter-playwright-reports-server',
@@ -58,9 +57,12 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'project-one',
+      name: 'chrome',
       testMatch: /.*\/e2e\/.*\.ts/,
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'],
+          trace: {
+              mode: 'on'
+          } },
     },
 
     {

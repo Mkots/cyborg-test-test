@@ -7,32 +7,32 @@ on:
         type: choice
         description: 'Specify the project to test'
         options:
-          - 'project-one'
+          - 'chrome'
           - 'project-two'
           - 'project-three'
           - 'api-tests'
         required: true
-        default: 'project-one'
+        default: 'chrome'
 
 jobs:
   test:
     name: Run Playwright Tests
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    container: 
+    container:
       image: mcr.microsoft.com/playwright:v1.56.1-noble
       options: --user root
     steps:
     - uses: actions/checkout@v4
-    
+
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
         cache: 'npm'
-    
+
     - name: Install dependencies
       run: npm ci
-    
+
     - name: Run Playwright tests
       id: playwright
       run: |
@@ -83,7 +83,7 @@ jobs:
         QA_USERNAME: ${{ github.actor }}
         PROJECT: ${{ github.event.inputs.project }}
         HOME: /root
-      
+
     - name: Generate Summary
       if: always()
       run: |
