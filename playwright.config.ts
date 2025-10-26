@@ -31,6 +31,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
     reporter: [
     ['blob', { outputFile: 'test-results/blob.zip' }],
+    ['./coverage-reporter.ts'],
     ['dot'],
     [
       '@cyborgtests/reporter-playwright-reports-server',

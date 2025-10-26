@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:coverage": "c8 --reporter=html --reporter=json-summary playwright test --project=unit-tests"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +15,7 @@
     "@playwright/test": "^1.56.1",
     "@types/node": "^24.8.1",
     "@types/sinon": "^17.0.4",
+    "c8": "^10.1.3",
     "dotenv": "^17.2.3",
     "envalid": "^8.1.0",
     "sinon": "^21.0.0"
