@@ -1,3 +1,5 @@
+.idea/
+
 
 # Playwright
 node_modules/
@@ -7,3 +9,6 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 .env
+
+#c8
+coverage/

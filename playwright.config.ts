@@ -14,12 +14,12 @@ function formatDate(date: Date = new Date()): string {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = String(date.getFullYear()).slice(-2);
-  
+
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
-  
-  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+
+  return `${day}-${month}-${year}_${hours}:${minutes}:${seconds}`;
 }
 
 
@@ -36,7 +36,7 @@ export default defineConfig({
       '@cyborgtests/reporter-playwright-reports-server',
       {
         enabled: true,
-        
+
         url: env.CT_SERVER_URL,
         token: env.CT_TOKEN,
         requestTimeout: 60000,
@@ -57,9 +57,12 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'project-one',
+      name: 'chrome',
       testMatch: /.*\/e2e\/.*\.ts/,
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'],
+          trace: {
+              mode: 'on'
+          } },
     },
 
     {
@@ -83,7 +86,16 @@ export default defineConfig({
           sources: true,
         },
       },
-    }
+    },
+      {
+        name: 'unit-tests',
+        testMatch: /.*\/unit\/.*\.ts/,
+        use: {
+            trace: {
+                mode: 'on'
+            }
+        },
+      }
 
   ],
 
