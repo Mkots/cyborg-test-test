@@ -115,5 +115,4 @@ describe('Vector errors', () => {
         const v2 = new Vector(1, 2, 3);
         expect(() => v1.isEqualTo(v2)).toThrow(VectorError.SizeMismatch());
     });
-    ``;
 });
