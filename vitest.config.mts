@@ -5,7 +5,7 @@ export default defineConfig({
     test: {
         globals: true,
         environment: 'node',
-        reporters: ['blob', './reporters/vitets-playwright-blob-reporter.ts'],
+        reporters: ['blob', './reporters/vitest-playwright-blob-reporter.ts'],
         coverage: {
             provider: 'v8',
             reporter: ['blob'],

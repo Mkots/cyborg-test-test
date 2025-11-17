@@ -1,6 +1,6 @@
 import { parse } from 'flatted'
 import { readFile, mkdir } from 'node:fs/promises'
-import { dirname, relative, resolve } from 'pathe'
+import { relative } from 'pathe'
 import { createWriteStream } from 'node:fs'
 import { randomUUID } from 'node:crypto'
 import type { File, Task } from '@vitest/runner'
@@ -17,7 +17,7 @@ export async function convertVitestToPlaywright(
     playwrightOutputPath: string
 ): Promise<void> {
     const content = await readFile(vitestBlobPath, 'utf-8')
-    const [version, files, errors, modules, coverage, executionTime] = parse(content)
+    const [version, files, errors, , , executionTime] = parse(content)
 
     const rootDir = process.cwd()
     const events: PlaywrightEvent[] = []
@@ -266,6 +266,7 @@ async function writePlaywrightBlob(
 
     const zipFinishPromise = new Promise<void>((resolve, reject) => {
         zipFile.outputStream
+            .on('error', reject) // Handle errors from the source stream
             .pipe(createWriteStream(outputPath))
             .on('close', resolve)
             .on('error', reject)

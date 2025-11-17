@@ -16,8 +16,8 @@ export class Vector extends Array<number> {
         this.items = items;
     }
 
-    static #isEqual(a: number, b: number, treshold = 0.01) {
-        return Math.abs(a - b) < treshold;
+    static #isEqual(a: number, b: number, threshold = 0.01) {
+        return Math.abs(a - b) < threshold;
     }
     static #toDegrees(radians: number) {
         return (radians * 180) / Math.PI;
