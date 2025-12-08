@@ -95,8 +95,12 @@ export default defineConfig({
                 mode: 'on'
             }
         },
-      }
-
+      },
+    {
+      name: "stramger-things",
+        testMatch: /.*\/stranger-things\/.*\.ts/,
+        use: { ...devices['Desktop Chrome']}
+    }
   ],
 
 });
