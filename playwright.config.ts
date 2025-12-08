@@ -89,7 +89,7 @@ export default defineConfig({
     },
       {
         name: 'unit-tests',
-        testMatch: /.*\/unit\/.*\.ts/,
+        testMatch: /.*\/unit\/.*\.test\.ts/,
         use: {
             trace: {
                 mode: 'on'
